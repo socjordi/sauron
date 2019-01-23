@@ -1,0 +1,93 @@
+;
+; ProcessMonitorDriver.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=ProcessMonitorDriver.cat
+DriverVer=05/26/2016,11.33.48.850
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+ProcessMonitorDriver.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTx86
+
+[Standard.NTx86]
+%ProcessMonitorDriver.DeviceDesc%=ProcessMonitorDriver_Device, Root\ProcessMonitorDriver ; TODO: edit hw-id
+
+[ProcessMonitorDriver_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+ProcessMonitorDriver.sys
+
+;-------------- Service installation
+[ProcessMonitorDriver_Device.NT.Services]
+AddService = ProcessMonitorDriver,%SPSVCINST_ASSOCSERVICE%, ProcessMonitorDriver_Service_Inst
+
+; -------------- ProcessMonitorDriver driver install sections
+[ProcessMonitorDriver_Service_Inst]
+DisplayName    = %ProcessMonitorDriver.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\ProcessMonitorDriver.sys
+
+;
+;--- ProcessMonitorDriver_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+ProcessMonitorDriver_Device_CoInstaller_CopyFiles = 11
+
+[ProcessMonitorDriver_Device.NT.CoInstallers]
+AddReg=ProcessMonitorDriver_Device_CoInstaller_AddReg
+CopyFiles=ProcessMonitorDriver_Device_CoInstaller_CopyFiles
+
+[ProcessMonitorDriver_Device_CoInstaller_AddReg]
+;
+
+
+[ProcessMonitorDriver_Device_CoInstaller_CopyFiles]
+;
+
+
+[SourceDisksFiles]
+;
+
+
+[ProcessMonitorDriver_Device.NT.Wdf]
+KmdfService =  ProcessMonitorDriver, ProcessMonitorDriver_wdfsect
+[ProcessMonitorDriver_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "ProcessMonitorDriver Installation Disk"
+ProcessMonitorDriver.DeviceDesc = "ProcessMonitorDriver Device"
+ProcessMonitorDriver.SVCDESC = "ProcessMonitorDriver Service"

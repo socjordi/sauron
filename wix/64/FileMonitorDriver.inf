@@ -1,0 +1,92 @@
+;
+; FileMonitorDriver.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=socjordi
+CatalogFile=FileMonitorDriver.cat
+DriverVer=11/30/2016,13.27.59.631
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+FileMonitorDriver.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%FileMonitorDriver.DeviceDesc%=FileMonitorDriver_Device, Root\FileMonitorDriver ; TODO: edit hw-id
+
+[FileMonitorDriver_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+FileMonitorDriver.sys
+
+;-------------- Service installation
+[FileMonitorDriver_Device.NT.Services]
+AddService = FileMonitorDriver,%SPSVCINST_ASSOCSERVICE%, FileMonitorDriver_Service_Inst
+
+; -------------- FileMonitorDriver driver install sections
+[FileMonitorDriver_Service_Inst]
+DisplayName    = %FileMonitorDriver.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\FileMonitorDriver.sys
+LoadOrderGroup = Extended Base
+
+;
+;--- FileMonitorDriver_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+FileMonitorDriver_Device_CoInstaller_CopyFiles = 11
+
+[FileMonitorDriver_Device.NT.CoInstallers]
+AddReg=FileMonitorDriver_Device_CoInstaller_AddReg
+CopyFiles=FileMonitorDriver_Device_CoInstaller_CopyFiles
+
+[FileMonitorDriver_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01009.dll,WdfCoInstaller"
+
+[FileMonitorDriver_Device_CoInstaller_CopyFiles]
+WdfCoInstaller01009.dll
+
+[SourceDisksFiles]
+WdfCoInstaller01009.dll=1 ; make sure the number matches with SourceDisksNames
+
+[FileMonitorDriver_Device.NT.Wdf]
+KmdfService =  FileMonitorDriver, FileMonitorDriver_wdfsect
+[FileMonitorDriver_wdfsect]
+KmdfLibraryVersion = 1.9
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="" ; TODO: add ManufacturerName
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "FileMonitorDriver Installation Disk"
+FileMonitorDriver.DeviceDesc = "FileMonitorDriver Device"
+FileMonitorDriver.SVCDESC = "FileMonitorDriver Service"
+

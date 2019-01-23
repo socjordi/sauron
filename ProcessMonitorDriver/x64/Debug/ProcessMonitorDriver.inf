@@ -1,0 +1,50 @@
+;
+; ProcessMonitorDriver.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class="ActivityMonitor"
+ClassGuid={b86dff51-a31e-4bac-b3cf-e8cfe75c9fc2}
+Provider=socjordi
+DriverVer=11/30/2016,7.56.20.604
+CatalogFile=%DriverName%.cat
+
+[DestinationDirs]
+DefaultDestDir = 1		; %SystemRoot%\system32\drivers
+Driver.DriverFiles = 1
+
+[DefaultInstall]
+CopyFiles = ProcessMonitorDriver.sys
+
+;[Driver.DriverFiles]
+;PMDriver.sys
+
+[SourceDisksNames]
+1 = %DiskName%
+
+[SourceDisksFiles]
+PMDriver.sys = 1
+
+[DefaultInstall.Services]
+AddService = %ServiceName%,,Driver.Service
+
+;[Driver.Service]
+;DisplayName      = %ServiceName%
+;Description      = %ServiceDescription%
+;ServiceBinary    = %12%\%FileName%
+;ServiceType      = 1                            ;SERVICE_KERNEL_DRIVER
+;StartType        = 3                            ;SERVICE_DEMAND_START
+;ErrorControl     = 1                            ;SERVICE_ERROR_NORMAL
+
+[Manufacturer]
+ManufacturerName=Standard,NTamd64
+
+[Standard.NTamd64]
+
+[Strings]
+FileName="ProcessMonitorDriver.sys"
+DriverName="ProcessMonitorDriver"
+ServiceName="ProcessMonitorDriver"
+ServiceDescription="ProcessMonitorDriver"
+DiskName="ProcessMonitor Source Disk"

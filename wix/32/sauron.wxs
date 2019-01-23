@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+
+<Product Name='Sauron - x86' Id='{DB8E1ED9-88DF-4C2A-B467-CE82777C75BD}' UpgradeCode='{DB8E1ED9-88DF-4C2A-B467-CE82777C75BD}' Language='1027' Codepage='1252' Version='1.0.0' Manufacturer='socjordi'>
+
+  <Package Id='*' Keywords='Installer' Description="Instal.lador Sauron - x86" Manufacturer='Unitat de Ciberseguretat' InstallerVersion='100' Languages='1027' Compressed='yes' SummaryCodepage='1252' InstallScope="perMachine" Platform="x86"/>
+
+  <Condition Message="Has de ser Administrador per a instal.lar aquest programari.">Privileged</Condition>
+  <Condition Message='El Sistema Operatiu ha de ser de 32 bits.'>NOT VersionNT64</Condition>
+
+  <Media Id='1' Cabinet='media.cab' EmbedCab='yes' />
+
+  <Directory Id='TARGETDIR' Name='SourceDir'>
+    <Directory Id='ProgramFilesFolder'>
+      <Directory Id='INSTALLFOLDER' Name='socjordi'>
+
+	  	<Component Id='SauronWatch' Guid='{2B7DAE66-DD48-46F8-825F-C6060A698852}'>
+          <File Id='SauronWatch' Name='sauronwatch.exe' DiskId='1' Source='sauronwatch.exe' KeyPath='yes'/>
+	    </Component>
+
+	    <Component Id='Sauron' Guid='{66FAFAB4-173A-4BC0-A2BB-6ECDD002843C}'>
+          <File Id='Sauron' Name='sauron.exe' DiskId='1' Source='sauron.exe' KeyPath='yes'/>
+	    </Component>
+
+		<Component Id='WinpcapWpcap' Guid='{8D977ACD-382A-4BB8-B639-B8E490FEEB78}'>
+          <File Id='WinpcapWpcap' Name='wpcap.dll' DiskId='1' Source='wpcap.dll' KeyPath='yes'/>
+	    </Component>
+		
+		<Component Id='WinpcapPacket' Guid='{30539566-7903-488E-824A-C32CB3498F8F}'>
+          <File Id='WinpcapPacket' Name='Packet.dll' DiskId='1' Source='packet.dll' KeyPath='yes'/>
+	    </Component>
+		
+		<Component Id='WinpcapNPF' Guid='{FADB00D6-0C80-4489-9769-0B88A59EB9D4}'>
+          <File Id='WinpcapNPF' Name='npf.sys' DiskId='1' Source='npf.sys' KeyPath='yes'/>
+	    </Component>
+
+		<Component Id='WinpcapPthreadVC' Guid='{C3FFC296-BA57-467A-9DBE-4EC2A92A9338}'>
+          <File Id='WinpcapPthreadVC' Name='pthreadVC.dll' DiskId='1' Source='pthreadVC.dll' KeyPath='yes'/>
+	    </Component>
+
+		<Component Id='FileMonitorDriver' Guid='{CE690B6F-DCA5-457A-8747-07FDE8983825}' Transitive='yes'>
+          <File Id='FileMonitorDriver' Name='FileMonitorDriver.sys' DiskId='1' Source='FileMonitorDriver.sys' KeyPath='yes'/>
+	    </Component>
+		
+	    <Component Id='ProcessMonitorDriver' Guid='{11E79EBA-FFCE-41DD-AE01-DC8AB06973BE}' Transitive='yes'>
+	      <File Id='ProcessMonitorDriver' Name='ProcessMonitorDriver.sys' DiskId='1' Source='ProcessMonitorDriver.sys' KeyPath='yes'/>
+	    </Component>
+		
+		<Component Id='NSSM' Guid='{60165614-A342-4A94-9FF2-C450BC2044A8}'>
+          <File Id='NSSM' Name='nssm.exe' DiskId='1' Source='nssm.exe' KeyPath='yes'/>
+          <ServiceInstall Id="SauronWatchService" 
+		    Type="ownProcess"
+		    Vital="yes"
+		    Name="SauronWatch"
+		    DisplayName="SauronWatch"
+		    Description="Sauron Watch"
+		    Start="auto"
+		    Account="LocalSystem"
+		    ErrorControl="normal"
+		    Interactive="no" />		
+          <ServiceInstall Id="SauronService" 
+		    Type="ownProcess"
+		    Vital="yes"
+		    Name="Sauron"
+		    DisplayName="Sauron"
+		    Description="Sauron"
+		    Start="auto"
+		    Account="LocalSystem"
+		    ErrorControl="normal"
+		    Interactive="no" />						
+          <RegistryKey Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\SauronWatch\Parameters">
+            <RegistryValue Name="AppDirectory" Value="[INSTALLFOLDER]" Type="expandable"/>
+            <RegistryValue Name="Application" Value="[INSTALLFOLDER]sauronwatch.exe" Type="expandable"/>
+            <RegistryValue Name="AppParameters" Value="" Type="expandable"/>
+            <RegistryKey Key="AppExit"><RegistryValue Value="Restart" Type="string"/></RegistryKey>
+          </RegistryKey>
+		  <RegistryKey Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\Sauron\Parameters">
+            <RegistryValue Name="AppDirectory" Value="[INSTALLFOLDER]" Type="expandable"/>
+            <RegistryValue Name="Application" Value="[INSTALLFOLDER]sauron.exe" Type="expandable"/>
+            <RegistryValue Name="AppParameters" Value="" Type="expandable"/>
+            <RegistryKey Key="AppExit"><RegistryValue Value="Restart" Type="string"/></RegistryKey>
+          </RegistryKey>
+		  <ServiceControl Id="SauronWatch" Start="install" Stop="uninstall" Remove="uninstall" Name="SauronWatch" Wait="no"/>
+		  <ServiceControl Id="Sauron" Stop="uninstall" Remove="uninstall" Name="Sauron" Wait="yes"/>		  
+	    </Component>
+
+      </Directory>
+    </Directory>
+  </Directory>
+  
+  <Feature Id="SauronWatch" Title="Sauron" Level="1">
+    <ComponentRef Id="Sauron"/>
+    <ComponentRef Id="SauronWatch"/>
+    <ComponentRef Id="WinpcapWpcap"/>
+    <ComponentRef Id="WinpcapPacket"/>
+    <ComponentRef Id="WinpcapNPF"/>
+    <ComponentRef Id="WinpcapPthreadVC"/>	
+    <ComponentRef Id="NSSM"/>
+    <ComponentRef Id="FileMonitorDriver"/>
+    <ComponentRef Id="ProcessMonitorDriver"/>
+  </Feature>
+  
+</Product>
+
+</Wix>

@@ -1,0 +1,5 @@
+open sftp://username:password@server/
+put sauron.exe /var/sauron/db/agent/x86/sauron.exe
+put sauron.msi /var/sauron/db/agent/x86/sauron_x86.msi
+close
+exit
